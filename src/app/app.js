@@ -13,7 +13,7 @@ import { addBodyWeight } from "./helper.js"
 import { addCatapultToTable } from "./helper.js"
 import { offensive } from "./offensive_stat.js"
 
-d3.json("../data/data.json").then(function (data) {
+d3.json("./data/data.json").then(function (data) {
 
     console.log(data)
 
