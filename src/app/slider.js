@@ -1,13 +1,13 @@
 import * as d3 from 'd3';
 
-import { getDatesWithData } from "./helper.js"
+import { getDatesWithDataEntry } from "./helper.js"
 
 export function makeSlider() {
 
-    let fullWidth = 500
-    let fullHeight = 50
+    let fullWidth = 700
+    let fullHeight = 70
 
-    d3.select("#dates").append('svg').attr('id', 'slider').attr('viewBox', `0 0 ${fullWidth} ${fullHeight}`)
+    d3.select("#dates").select('#viz').append('svg').attr('id', 'slider').attr('viewBox', `0 0 ${fullWidth} ${fullHeight}`)
         .attr('preserveAspectRatio', 'xMidYMid');
 
     var svg = d3.select("#slider"),
@@ -20,15 +20,15 @@ export function makeSlider() {
     var xAxis = d3.axisBottom(x).ticks(5);
     var box = svg.append("g")
         .attr("class", "context")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
     return { 'svg': svg, 'margin': margin, 'width': width, 'height': height, 'x': x, 'xAxis': xAxis, 'box': box }
 }
 
 
-export function dateSlider(data, player, params, whenBrushed) {
+export function dateSlider(data, params, whenBrushed) {
 
-    let dates = getDatesWithData(data, player)
+    let dates = getDatesWithDataEntry(data)
 
     params.x.domain(d3.extent(dates, function (d) { return d.date; }));
 
@@ -63,7 +63,10 @@ export function dateSlider(data, player, params, whenBrushed) {
 
     var brush = d3.brushX()
         .extent([[0, 0], [params.width, params.height]])
-        .on("brush end", (event) => {whenBrushed(event.selection.map(d => params.x.invert(d)))});
+        .on("brush end", (event) => {
+            let interval = event.selection || params.x.range()
+            whenBrushed(data, interval.map(d => params.x.invert(d)))
+        });
 
     params.box.append("g")
         .attr("class", "brush")

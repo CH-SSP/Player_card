@@ -60,7 +60,7 @@ main {
 }
 
 .background {
-  background-color:#999999;
+  background-color: #999999;
 }
 
 .text-section {
@@ -85,12 +85,32 @@ main {
   }
 }
 
+.sticky {
+  max-width: $text-max-width;
+  padding: 1em 25px; //$main-padding
+  margin: auto auto; //5em auto
+  background-color: rgba(255, 255, 255, 0.9);
+  box-sizing: content-box;
+  position: sticky;
+  top: 0px;
+  //padding: 10px 0px;
+}
+
+.start {
+  height: 100px;
+}
+
+.end {
+  height: 500px;
+}
+
+
 .viz-section {
   position: relative;
   display: flex;
   padding: $main-padding;
 
-  > .steps {
+  >.steps {
     padding-top: 50vh;
     padding-bottom: 50vh;
     flex-basis: 100% - $vis-width;
@@ -100,7 +120,7 @@ main {
     }
   }
 
-  > .viz {
+  >.viz {
     // sass-lint:disable no-vendor-prefixes
     position: -webkit-sticky;
     // sass-lint:disable no-duplicate-properties
@@ -116,6 +136,27 @@ main {
       height: 100%;
     }
   }
+}
+
+.svg-tooltip {
+  background: rgba(69,77,93,.9);
+  border-radius: .1rem;
+  color: #fff;
+  display: block;
+  font-size: 14px;
+  max-width: 500px;
+  padding: .2rem .4rem;
+  position: absolute;
+  text-overflow: ellipsis;
+  white-space: pre;
+  z-index: 300;
+  visibility: hidden;
+}
+
+.label {
+  text-align: center;
+  //text-anchor: middle;
+
 }
 
 // ***** Mobile *****
@@ -138,7 +179,7 @@ main {
     flex-wrap: wrap;
     flex-direction: column-reverse;
 
-    > .steps {
+    >.steps {
       padding: 0 $main-padding-left-right 100vh;
       flex-basis: 100%;
 
@@ -154,7 +195,7 @@ main {
       }
     }
 
-    > .viz {
+    >.viz {
       z-index: -1;
       width: 100%;
       flex-basis: 100%;
@@ -172,32 +213,14 @@ main {
 
 // Slope chart
 
-.slope-label-left, .slope-label-right {
-  font-size: 16px;
-  cursor: default;
-  font-weight: 400;
-}
 
-.label-figure {
-  font-weight: 700;
-}
-
-.border-lines {
-  stroke: #999;
-  stroke-width: 1px;
-}
-
-slopeChartCircle {
-  fill: white;
-  stroke: black;
-  stroke-width: 2px;
-}
 
 .axis-label {
   font-size: 20px;
   cursor: default;
   font-weight: 400;
 }
+
 .tick {
   font-size: 12px;
   cursor: default;

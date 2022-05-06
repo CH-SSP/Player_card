@@ -29,42 +29,16 @@ function getPlayersInfo(data){
 
 }
 
-export function dateSlider(data, player){
-    console.log(getDatesWithData(data, player))
 
-    const config = {
-        height: 100,
-        margin: {
-            bottom: 50,
-            left: 50,
-            right: 50,
-            top: 50
-        },
-        width: 500
-    }
-    const fullWidth = config.margin.left + config.width + config.margin.right;
-    const fullHeight = config.margin.top + config.height + config.margin.bottom;
-
-
-    const visContainer = d3.select("#dates");
-    const svg = visContainer.append('svg')
-        .attr('viewBox', `0 0 ${fullWidth} ${fullHeight}`)
-        .attr('preserveAspectRatio', 'xMidYMid');
-
-
-    const g = svg.append('g')
-        .attr('transform', `translate(${config.margin.left}, ${config.margin.top})`);
-
-}
-export function getDatesWithData(data, player){
+export function getDatesWithDataEntry(data){
 
     let slashParser = d3.timeParse('%m/%d/%Y')
     let dashParser = d3.timeParse('%Y-%m-%d')
     let formatTime = d3.timeFormat('%m/%d/%Y')
 
-    let catapultDates = data.filter(d => d.name.includes(player))[0].catapult_data.map(d => slashParser(d.date_name))
-    let ratingsDates = data.filter(d => d.name.includes(player))[0].player_ratings.map(d => dashParser(d.date))
-    let valdDates = data.filter(d => d.name.includes(player))[0].vald_data.map(d => dashParser(d.date))
+    let catapultDates = data.catapult_data.map(d => slashParser(d.date_name))
+    let ratingsDates = data.player_ratings.map(d => dashParser(d.date))
+    let valdDates = data.vald_data.map(d => dashParser(d.date))
 
     let dates = valdDates.concat(catapultDates, ratingsDates, valdDates)
         .sort((a,b) => d3.ascending(a,b))

@@ -17,58 +17,64 @@
 <body>
   <main>
 
-    <section class="background">
+    <section class="background" class="start">
       <section class="text-section intro">
         <h1>Player Card</h1>
       </section>
     </section>
-    
-    
 
-    <section class=text-section id = "player-info">
+    <section class="sticky" id="dates" >
       <select name="players" id="player-select">
-          <option value = "None">Select a player</option>
+        <option value="None">Select a player</option>
       </select>
+      <div id="viz" > </div>
+    </section>
+
+    <section class=text-section id="player-info" class="end">
       <h1></h1>
       <table>
         <tr>
           <td>Bodyweight</td>
-          <td id = "bodyweight"></td>
+          <td id="bodyweight"></td>
         </tr>
         <tr>
           <td>Average Practice Load</td>
-          <td id = "average_practice_load"></td>
+          <td id="average_practice_load"></td>
         </tr>
         <tr>
           <td>Average Game Load</td>
-          <td id = "average_game_load"></td>
+          <td id="average_game_load"></td>
         </tr>
         <tr>
           <td>Practice Max Velocity</td>
-          <td id = 'practice_max_vel'></td>
+          <td id='practice_max_vel'></td>
         </tr>
         <tr>
           <td>Game Max Velocity</td>
-          <td id = 'game_max_vel'></td>
+          <td id='game_max_vel'></td>
         </tr>
         <tr>
           <td>Most recent Jump Height</td>
-          <td id = 'jump_height'></td>
+          <td id='jump_height'></td>
         </tr>
         <tr>
           <td>Most recent RSI Mod</td>
-          <td id = 'rsi_mod'></td>
+          <td id='rsi_mod'></td>
         </tr>
         <tr>
           <td>Most recent Concentric Impulse</td>
-          <td id = 'concentric_impulse'></td>
+          <td id='concentric_impulse'></td>
         </tr>
       </table>
-      <div class="viz" id="dates"></div>
     </section>
 
-    <section class=text-section>
+
+
+
+
+    <section class=text-section >
       <h1>In-Game Pace</h1>
+      <div class="viz" id="InGamePace">
     </section>
 
     <section class=text-section>
