@@ -7,37 +7,43 @@
 'use strict';
 import * as d3 from 'd3';
 import '../assets/styles/style.scss';
-import { playerList } from "./helper.js"
+import * as helper from "./helper.js"
 import { makeSlider, dateSlider } from "./slider.js"
-import * as catapult from './catapult.js';
+import * as linechart from './linechart.js';
+import * as barchart from './barchart.js'
 import { addBodyWeight } from "./helper.js"
 import { addCatapultToTable } from "./helper.js"
 import { offensive } from "./offensive_stat.js"
 
+const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "svg-tooltip")
+    .style("position", "absolute")
+    .style("visibility", "hidden");
+
+const dim = {
+    'fullWidth': 700,
+    'fullHeight': 400,
+    'margin': { top: 30, right: 30, bottom: 30, left: 30 }
+}
+
 d3.json("./data/data.json").then(function (data) {
 
-    playerList(data)
+    helper.playerList(data)
 
-    var sliderParameters = makeSlider()
+    const sliderParameters = makeSlider()
+    const teams = helper.getTeams(data)
+    const inGamePaceParameters = helper.chartBuilder("#InGamePace", dim)
+    const maxVelParameters = helper.chartBuilder("#MaxVel", dim)
+    const playerLoadParameters = helper.chartBuilder("#PlayerLoad", dim)
 
-    var teams = [
-        ...new Set(data.map(d => d.player_ratings.map(d => d.opponent)).flat()), 
-        ...new Set(data.map(d => d.catapult_data.map(d => {
-            let splitted = d.activity_name.split(' ')
-            if (splitted[0] == 'LR' && splitted[1] == 'vs') {
-                return splitted[2]//.slice(0,3)
-            }
-        })).flat())
-    ]
-    console.log(teams)
-
-    var inGamePaceParameters = catapult.lineChartBuilder("#InGamePace")
 
     d3.select("#player-select").on("input.3", function () {
 
         var playerData = data.filter(d => d.name.includes(this.value))[0];
 
-        function whenBrushed(data, timeInterval ) {
+
+        function whenBrushed(data, timeInterval) {
             // if (event.sourceEvent && event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
             // var s = event.selection || x.range();
             // x.domain(s.map(x.invert, x));
@@ -46,11 +52,31 @@ d3.json("./data/data.json").then(function (data) {
             // svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
             //     .scale(width / (s[1] - s[0]))
             //     .translate(-s[0], 0));
-            let datesData = catapult.getCatapultData(data, timeInterval, teams)
+            let datesData = helper.getCatapultData(data, timeInterval, teams)
+
             
-            catapult.lineChartUpdate(
+            linechart.lineChartUpdate(
                 datesData.filter(d => d.type !== 'Practice' & d.type !== 'Other'), 
-                inGamePaceParameters
+                inGamePaceParameters,
+                tooltip,
+                'pace',
+                timeInterval
+            )
+
+            linechart.lineChartUpdate(
+                datesData.filter(d => d.type !== 'Practice' & d.type !== 'Other'), 
+                maxVelParameters,
+                tooltip,
+                'maxvel',
+                timeInterval
+            )
+
+            barchart.barChartUpdate(
+                datesData, 
+                playerLoadParameters,
+                tooltip,
+                'load',
+                timeInterval
             )
             
         }

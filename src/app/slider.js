@@ -11,7 +11,7 @@ export function makeSlider() {
         .attr('preserveAspectRatio', 'xMidYMid');
 
     var svg = d3.select("#slider"),
-        margin = { top: 10, right: 10, bottom: 20, left: 10 },
+        margin = { top: 10, right: 30, bottom: 20, left: 30 },
         width = fullWidth - margin.right - margin.left,
         height = fullHeight - margin.top - margin.bottom;
 
