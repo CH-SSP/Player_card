@@ -2,41 +2,6 @@ import * as d3 from 'd3';
 import * as helper from "./helper.js";
 
 
-/** Adds the elements for the linechart
- * 
- * @param {*} id 
- * @returns 
- */
-export function barChartBuilder(id, dim) {
-
-    var width = dim.fullWidth - dim.margin.left - dim.margin.right,
-        height = dim.fullHeight - dim.margin.top - dim.margin.bottom;
-
-
-    // append the svg object to the body of the page
-    d3.select(id)
-        .append("svg")
-        .attr('viewBox', `0 0 ${dim.fullWidth} ${dim.fullHeight}`)
-        .attr('preserveAspectRatio', 'xMidYMid')
-        .append("g")
-        .attr("transform",
-            "translate(" + dim.margin.left + "," + dim.margin.top + ")")
-        .attr('id', 'container')
-
-    let svg = d3.select(id).select("#container")
-
-    helper.appendGradient(svg, height)
-    helper.appendDeviationBand(svg)
-
-    return {
-        'svg': svg,
-        'width': width,
-        'height': height,
-        'x': helper.appendXAxis(svg, width, height),
-        'y': helper.appendYAxis(svg, height)
-    }
-}
-
 /** Update the barchart elements
  * 
  * @param {*} data 
@@ -54,7 +19,7 @@ export function barChartUpdate(data, params, tooltip, metric, interval) {
         y = helper.updateYAxis(data, params.svg, params.y, metric)
 
     helper.updateDeviationBand(data, params.svg, x, y, metric)
-    appendBars(data, params.svg, x, y, tooltip, metric, barWidth)
+    appendBars(params.id, data, params.svg, x, y, tooltip, metric, barWidth)
     appendLabel(data, params.svg, x, y, metric, numberOfDays)
 
 
@@ -64,7 +29,7 @@ function appendLabel(data, g, x, y, metric, numberOfDays) {
 
     g.selectAll('.label').remove()
 
-    if (numberOfDays < 60) {
+    if (numberOfDays < 90) {
 
         g.append('g')
             .attr('class', 'label')
@@ -87,7 +52,7 @@ function appendLabel(data, g, x, y, metric, numberOfDays) {
  * @param {*} x 
  * @param {*} y 
  */
-export function appendBars(data, g, x, y, tooltip, metric, barWidth) {
+export function appendBars(id, data, g, x, y, tooltip, metric, barWidth) {
 
     g.selectAll('.bar').remove()
 
@@ -106,7 +71,7 @@ export function appendBars(data, g, x, y, tooltip, metric, barWidth) {
         .attr('fill', d => d.type == 'Practice' | d.type == 'Other' ? 'url(#practice-gradient)' : 'url(#line-gradient)')
         .on("mouseover", function () {
 
-            d3.select('#PlayerLoad').select('g.bar').selectAll('rect').attr('opacity', 0.7)
+            d3.select(id).select('g.bar').selectAll('rect').attr('opacity', 0.6)
             d3.select(this).attr('opacity', 1)
             let formatTime = d3.timeFormat('%b %d, %Y')
             let d = d3.select(this).data()[0]
@@ -121,7 +86,7 @@ export function appendBars(data, g, x, y, tooltip, metric, barWidth) {
                 .style("left", (event.pageX + 20) + "px");
         })
         .on("mouseout", function () {
-            d3.select('#PlayerLoad').select('g.bar').selectAll('rect').attr('opacity', 1)
+            d3.select(id).select('g.bar').selectAll('rect').attr('opacity', 1)
             return tooltip.style("visibility", "hidden");
         });
 }

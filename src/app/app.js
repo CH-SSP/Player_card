@@ -11,9 +11,6 @@ import * as helper from "./helper.js"
 import { makeSlider, dateSlider } from "./slider.js"
 import * as linechart from './linechart.js';
 import * as barchart from './barchart.js'
-import { addBodyWeight } from "./helper.js"
-import { addCatapultToTable } from "./helper.js"
-import { offensive } from "./offensive_stat.js"
 
 const tooltip = d3.select("body")
     .append("div")
@@ -30,12 +27,16 @@ const dim = {
 d3.json("./data/data.json").then(function (data) {
 
     helper.playerList(data)
+    console.log(data)
 
-    const sliderParameters = makeSlider()
-    const teams = helper.getTeams(data)
-    const inGamePaceParameters = helper.chartBuilder("#InGamePace", dim)
-    const maxVelParameters = helper.chartBuilder("#MaxVel", dim)
-    const playerLoadParameters = helper.chartBuilder("#PlayerLoad", dim)
+    const sliderParameters = makeSlider(),
+        teams = helper.getTeams(data),
+        inGamePaceParameters = helper.chartBuilder("#InGamePace", dim),
+        maxVelParameters = helper.chartBuilder("#MaxVel", dim),
+        playerLoadParameters = helper.chartBuilder("#PlayerLoad", dim),
+        offensiveParameters = helper.chartBuilder("#offensive", dim),
+        defensiveParameters = helper.chartBuilder("#defensive", dim)
+        
 
 
     d3.select("#player-select").on("input.3", function () {
@@ -52,11 +53,12 @@ d3.json("./data/data.json").then(function (data) {
             // svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
             //     .scale(width / (s[1] - s[0]))
             //     .translate(-s[0], 0));
-            let datesData = helper.getCatapultData(data, timeInterval, teams)
+            let catapultData = helper.getCatapultData(data, timeInterval, teams), 
+                playerRatingsData = helper.getPlayerRatingsData(data, timeInterval)
 
             
             linechart.lineChartUpdate(
-                datesData.filter(d => d.type !== 'Practice' & d.type !== 'Other'), 
+                catapultData.filter(d => d.type !== 'Practice' & d.type !== 'Other'), 
                 inGamePaceParameters,
                 tooltip,
                 'pace',
@@ -64,7 +66,7 @@ d3.json("./data/data.json").then(function (data) {
             )
 
             linechart.lineChartUpdate(
-                datesData.filter(d => d.type !== 'Practice' & d.type !== 'Other'), 
+                catapultData.filter(d => d.type !== 'Practice' & d.type !== 'Other'), 
                 maxVelParameters,
                 tooltip,
                 'maxvel',
@@ -72,10 +74,26 @@ d3.json("./data/data.json").then(function (data) {
             )
 
             barchart.barChartUpdate(
-                datesData, 
+                catapultData, 
                 playerLoadParameters,
                 tooltip,
                 'load',
+                timeInterval
+            )
+
+            barchart.barChartUpdate(
+                playerRatingsData, 
+                offensiveParameters,
+                tooltip,
+                'ogp',
+                timeInterval
+            )
+
+            barchart.barChartUpdate(
+                playerRatingsData, 
+                defensiveParameters,
+                tooltip,
+                'pbw',
                 timeInterval
             )
             

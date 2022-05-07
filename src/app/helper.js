@@ -137,7 +137,30 @@ export function getTeams(data) {
 
 }
 
+/** Obtains the data for the catapult viz
+ * 
+ * @param {Array} data 
+ * @param {Array} dates
+ * @returns 
+ */
+ export function getPlayerRatingsData(data, dates) {
 
+    let dashParser = d3.timeParse('%Y-%m-%d')
+    let filteredData = data.player_ratings.map(d => {
+        return {
+            'date': dashParser(d.date),
+            'name': null,
+            'type': d.opponent,
+            'ogp': parseInt(d['5v5 OGPs']),
+            'pbw' : parseFloat(d['5v5 Contested LPR win%'].slice(0,-1)),
+        }
+    })
+        .sort((a, b) => d3.ascending(a.date, b.date))
+        .filter(d => d.date >= dates[0] && d.date <= dates[1])
+
+    return filteredData
+
+}
 
 
 /** Adds the elements for the chart
@@ -167,6 +190,7 @@ export function getTeams(data) {
     appendDeviationBand(svg)
 
     return {
+        'id': id,
         'svg': svg,
         'width': width,
         'height': height,
