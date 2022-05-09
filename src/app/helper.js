@@ -14,11 +14,7 @@ export function playerList(data) {
         d3.select('#player-select').append("option").html(player.last_name + ', ' + player.first_name + ' (' + player.jersey + ')').attr("value", player.first_name + ' ' + player.last_name);
     }
 
-    //d3.select('#player-info').select('h1')
-
-    d3.select("#player-select").on("input.1", function () {
-        d3.select("#player-info").select('h1').text(this.value)
-    })
+    
 
 }
 
@@ -94,7 +90,7 @@ export function getTeams(data) {
  * @param {String} string 
  * @returns 
  */
- function getOpponent(teams, string) {
+ export function getOpponent(teams, string) {
 
     let opp = teams.filter(x => string.includes(x))
 

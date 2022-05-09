@@ -76,7 +76,7 @@ main {
 
 
   &.intro h1 {
-    font-size: 2em;
+    font-size: 1.5em;
     color: white;
     margin-top: 0;
     margin-bottom: 0;
@@ -91,7 +91,7 @@ main {
 
   p {
     margin-bottom: 0.8em;
-    color: white
+    color: grey
   }
 }
 
@@ -120,7 +120,7 @@ table {
   left:50%;
   transform:translateX(-50%);
   border-collapse: collapse;
-  width: 50%;
+  //width: 50%;
   font-size: 14px;
   
 }
@@ -136,6 +136,10 @@ tr {
 }
 tr:last-child {
   border : none
+}
+
+.value {
+  text-align: right;
 }
 
 

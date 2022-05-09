@@ -11,6 +11,7 @@ import * as helper from "./helper.js"
 import { makeSlider, dateSlider } from "./slider.js"
 import * as linechart from './linechart.js';
 import * as barchart from './barchart.js'
+import * as table from './summary_table.js'
 
 const tooltip = d3.select("body")
     .append("div")
@@ -43,6 +44,10 @@ d3.json("./data/data.json").then(function (data) {
 
         var playerData = data.filter(d => d.name.includes(this.value))[0];
 
+        table.updateTable(playerData, teams)
+
+        d3.select("#player-info").select('p').text(playerData.catapult_info.jersey + " | "+ playerData.catapult_info.position_name)
+        d3.select("#player-info").select('h1').text(this.value)
 
         function whenBrushed(data, timeInterval) {
             // if (event.sourceEvent && event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
