@@ -60,23 +60,33 @@ main {
 }
 
 .background {
-  background-color: #999999;
+  background-color: rgb(18,27,104)//rgb(176,24,41);
 }
 
 .text-section {
   max-width: $text-max-width;
-  padding: 5em 25px; //$main-padding
+  padding: 1em 25px; //$main-padding
   margin: auto auto; //5em auto
   box-sizing: content-box;
 
+  h1 {
+    color: black;
+    margin-bottom: 1.5em
+  }
+
+
   &.intro h1 {
-    font-size: 4em;
-    color: white
+    font-size: 2em;
+    color: white;
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
   }
 
   h2 {
     font-size: $step-heading-font-size*1.25;
-    color: white
+    color: black;
+    margin-bottom: 1em
   }
 
   p {
@@ -86,8 +96,9 @@ main {
 }
 
 .sticky {
+  z-index: 1;
   max-width: $text-max-width;
-  padding: 1em 25px; //$main-padding
+  padding: 2em 25px 0.5em; //$main-padding
   margin: auto auto; //5em auto
   background-color: rgba(255, 255, 255, 0.9);
   box-sizing: content-box;
@@ -103,6 +114,30 @@ main {
 .end {
   height: 500px;
 }
+
+table {
+  position:relative;
+  left:50%;
+  transform:translateX(-50%);
+  border-collapse: collapse;
+  width: 50%;
+  font-size: 14px;
+  
+}
+
+td {
+  padding: 15px;
+}
+
+tr {
+  border-bottom: 1px solid #ddd;
+  height:40px;
+  padding: 15px;
+}
+tr:last-child {
+  border : none
+}
+
 
 
 .viz-section {
@@ -156,7 +191,9 @@ main {
 .label {
   text-align: center;
   text-anchor: middle;
-  font-size: 10px;
+  font-size: 12px;
+  stroke: white;
+  stroke-width: 0.3px
 
 }
 

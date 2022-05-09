@@ -5,13 +5,13 @@ import { getDatesWithDataEntry } from "./helper.js"
 export function makeSlider() {
 
     let fullWidth = 700
-    let fullHeight = 70
+    let fullHeight = 80
 
     d3.select("#dates").select('#viz').append('svg').attr('id', 'slider').attr('viewBox', `0 0 ${fullWidth} ${fullHeight}`)
         .attr('preserveAspectRatio', 'xMidYMid');
 
     var svg = d3.select("#slider"),
-        margin = { top: 10, right: 30, bottom: 20, left: 30 },
+        margin = { top: 20, right: 30, bottom: 20, left: 30 },
         width = fullWidth - margin.right - margin.left,
         height = fullHeight - margin.top - margin.bottom;
 

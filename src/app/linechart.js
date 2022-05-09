@@ -10,6 +10,10 @@ import * as helper from "./helper.js";
  */
 export function lineChartUpdate(data, params, tooltip, metric, interval) {
 
+    params.svg.selectAll('path#curve').remove()
+    params.svg.selectAll('.points').remove()
+    params.svg.select('rect.dev').attr('height', 0)
+
     if (data.length == 0) { return; }
 
     let x = helper.updateXAxis(data, params.svg, params.x, interval),
@@ -89,47 +93,4 @@ export function updatePoints(data, g, x, y, tooltip, metric) {
             return tooltip.style("visibility", "hidden");
         });
 }
-
-
-
-// svg.append('g')
-// .attr('class', 'label')
-// .selectAll('labels')
-// .data(data)
-// .enter()
-// .append('text')
-// .attr('class', 'label')
-// .attr('x', d => x(d.date))
-// .attr('y', d => y(d.pace))
-// .text(d => d.type)
-
-// data.forEach(d => {d.x = x(d.date)+10; d.y = y(d.pace)-10})
-
-// function getSimulation(data) {
-//     return d3.forceSimulation(data)
-//         .alphaDecay(0)
-//         .velocityDecay(0.75)
-//         .force("y", d3.forceY((d) => {
-//             return y(d.pace)-10;
-//             }).strength(0.5))
-//         .force("x", d3.forceX((d) => {
-//             return x(d.date)+10;
-//             }).strength(0.5))
-//         .force('collision',
-//             d3.forceCollide(20)
-//                 .strength(1)
-//         )
-// }
-
-
-// function simulate(simulation) {
-//     simulation.on('tick', () => {
-//         d3.selectAll('text.label')
-//             .attr('x', (d) => d.x)
-//             .attr('y', (d) => d.y)
-//     })
-// }
-
-// var simulation = getSimulation(data)
-// simulate(simulation)
 

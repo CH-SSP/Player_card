@@ -8,21 +8,95 @@ import * as helper from "./helper.js";
  * @param {*} params 
  * @returns 
  */
-export function barChartUpdate(data, params, tooltip, metric, interval) {
+export function barChartUpdate(data, params, tooltip, metric, interval, teamLogo = false) {
+
+    params.svg.selectAll('g.label').remove()
+    params.svg.selectAll('.bar').remove()
+    params.svg.select('rect.dev').attr('height', 0)
 
     if (data.length == 0) { return; }
 
     let numberOfDays = d3.timeDay.count(interval[0], interval[1])
     let barWidth = 0.9 * params.width / numberOfDays
 
-    let x = helper.updateXAxis(data, params.svg, params.x, interval, barWidth, params.width),
+    let x = updateXAxis(params.svg, params.x, interval),
         y = helper.updateYAxis(data, params.svg, params.y, metric)
 
     helper.updateDeviationBand(data, params.svg, x, y, metric)
     appendBars(params.id, data, params.svg, x, y, tooltip, metric, barWidth)
-    appendLabel(data, params.svg, x, y, metric, numberOfDays)
+
+    teamLogo ? teamLabel(data, params.svg, x, y, metric, numberOfDays) : appendLabel(data, params.svg, x, y, metric, numberOfDays)
+
+}
+
+function teamLabel(data, g, x, y, metric, numberOfDays) {
+
+    g.selectAll('g.label').remove()
+
+    if (numberOfDays < 90) {
+
+        data.forEach(d => { d.x = x(d.date); d.y = y(d[metric]) - 10 })
+
+        g.append('g')
+            .attr('class', 'label')
+            .selectAll('label')
+            .data(data)
+            .enter()
+            .append('text')
+            .attr('class', 'label')
+            .attr('x', d => x(d.date))
+            .attr('y', d => y(d[metric]))
+            .text(d => d.type)
+
+        let simulation = getSimulation(data,x,y,metric)
+        simulate(simulation, g)
+
+    }
+}
+
+function getSimulation(data,x,y,metric) {
+    return d3.forceSimulation(data)
+        .alphaDecay(0.4)
+        .velocityDecay(0.8)
+        .force('y', d3.forceY((d) => {
+            return y(d[metric]) - 10;
+        }).strength(3))
+        .force('x', d3.forceX((d) => {
+            return x(d.date);
+        }).strength(1))
+        .force('collision',
+            d3.forceCollide(15)
+                .strength(2)
+        )
+}
 
 
+function simulate(simulation, g) {
+    simulation.on('tick', () => {
+        g.selectAll('text.label')
+            .attr('x', (d) => d.x)
+            .attr('y', (d) => d.y)
+    })
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} g 
+ * @param {*} x 
+ * @returns {Function} modified x
+ */
+export function updateXAxis(g, x, interval) {
+
+    //x.domain(d3.extent(data, function (d) { return d.date; }))
+    x.domain([d3.timeDay.offset(interval[0], -1), d3.timeDay.offset(interval[1], 1)])
+
+    g.selectAll(".x-axis")
+        .transition()
+        .duration(50)
+        .call(d3.axisBottom(x).ticks(5));
+
+    return x
 }
 
 function appendLabel(data, g, x, y, metric, numberOfDays) {
@@ -39,7 +113,7 @@ function appendLabel(data, g, x, y, metric, numberOfDays) {
             .append('text')
             .attr('class', 'label')
             .attr('x', d => x(d.date))
-            .attr('y', d => y(d[metric])-5)
+            .attr('y', d => y(d[metric]) - 5)
             .text(d => Math.round(d[metric]))
     }
 
@@ -56,8 +130,6 @@ export function appendBars(id, data, g, x, y, tooltip, metric, barWidth) {
 
     g.selectAll('.bar').remove()
 
-
-
     g.append('g')
         .attr('class', 'bar')
         .selectAll('bars')
@@ -71,7 +143,7 @@ export function appendBars(id, data, g, x, y, tooltip, metric, barWidth) {
         .attr('fill', d => d.type == 'Practice' | d.type == 'Other' ? 'url(#practice-gradient)' : 'url(#line-gradient)')
         .on("mouseover", function () {
 
-            d3.select(id).select('g.bar').selectAll('rect').attr('opacity', 0.6)
+            d3.select(id).select('g.bar').selectAll('rect').attr('opacity', 0.5)
             d3.select(this).attr('opacity', 1)
             let formatTime = d3.timeFormat('%b %d, %Y')
             let d = d3.select(this).data()[0]

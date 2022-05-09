@@ -20,8 +20,8 @@ const tooltip = d3.select("body")
 
 const dim = {
     'fullWidth': 700,
-    'fullHeight': 400,
-    'margin': { top: 30, right: 30, bottom: 30, left: 30 }
+    'fullHeight': 450,
+    'margin': { top: 30, right: 30, bottom: 50, left: 30 }
 }
 
 d3.json("./data/data.json").then(function (data) {
@@ -54,7 +54,8 @@ d3.json("./data/data.json").then(function (data) {
             //     .scale(width / (s[1] - s[0]))
             //     .translate(-s[0], 0));
             let catapultData = helper.getCatapultData(data, timeInterval, teams), 
-                playerRatingsData = helper.getPlayerRatingsData(data, timeInterval)
+                playerRatingsData1 = helper.getPlayerRatingsData(data, timeInterval),
+                playerRatingsData2 = helper.getPlayerRatingsData(data, timeInterval)
 
             
             linechart.lineChartUpdate(
@@ -82,19 +83,21 @@ d3.json("./data/data.json").then(function (data) {
             )
 
             barchart.barChartUpdate(
-                playerRatingsData, 
+                playerRatingsData1, 
                 offensiveParameters,
                 tooltip,
                 'ogp',
-                timeInterval
+                timeInterval,
+                true,
             )
 
             barchart.barChartUpdate(
-                playerRatingsData, 
+                playerRatingsData2, 
                 defensiveParameters,
                 tooltip,
                 'pbw',
-                timeInterval
+                timeInterval,
+                true,
             )
             
         }
