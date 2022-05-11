@@ -129,7 +129,7 @@ td {
   padding: 15px;
 }
 
-tr {
+tr, th {
   border-bottom: 1px solid #ddd;
   height:40px;
   padding: 15px;
@@ -140,6 +140,10 @@ tr:last-child {
 
 .value {
   text-align: right;
+}
+
+.title {
+  text-align: left;
 }
 
 

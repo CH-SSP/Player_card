@@ -37,14 +37,15 @@ d3.json("./data/data.json").then(function (data) {
         playerLoadParameters = helper.chartBuilder("#PlayerLoad", dim),
         offensiveParameters = helper.chartBuilder("#offensive", dim),
         defensiveParameters = helper.chartBuilder("#defensive", dim)
-        
-
+    
+    table.lastGamesTableBuilder()
 
     d3.select("#player-select").on("input.3", function () {
 
         var playerData = data.filter(d => d.name.includes(this.value))[0];
 
         table.updateTable(playerData, teams)
+        table.updateLastGamesTable(playerData)
 
         d3.select("#player-info").select('p').text(playerData.catapult_info.jersey + " | "+ playerData.catapult_info.position_name)
         d3.select("#player-info").select('h1').text(this.value)

@@ -3,29 +3,49 @@ import * as helper from './helper.js'
 
 export function updateTable(data, teams) {
 
-    let weights = getWeight(data.vald_data)
-    let currentWeight = weights.shift()
-    let weightChange = getWeightChange(currentWeight, weights)
+    if (data.vald_data.length > 0) {
+        let weights = getWeight(data.vald_data),
+            currentWeight = weights.shift(),
+            weightChange = getWeightChange(currentWeight, weights),
+            jump_height = data.vald_data[0].JUMP_HEIGHT_IMP_MOM,
+            rsi_mod = data.vald_data[0].RSI_MODIFIED,
+            concentric_impulse = data.vald_data[0].CONCENTRIC_IMPULSE
 
-    if (weights.length>1) {
-        d3.select("td#bodyweight").text(currentWeight.toFixed(1) + ' kg (' + (weightChange > 0 ? '+ ' : '- ') + Math.abs(weightChange*100).toFixed(1)+' %)')
-    } else if (weights.length>0) {
-        d3.select("td#bodyweight").text(currentWeight.toFixed(1) + ' kg')
+        if (weights.length > 0) {
+            d3.select("td#bodyweight").text(currentWeight.toFixed(1) + ' kg (' + (weightChange > 0 ? '+ ' : '- ') + Math.abs(weightChange.toFixed(1)) + ')')
+        } else if (weights.length == 0) {
+            d3.select("td#bodyweight").text(currentWeight.toFixed(1) + ' kg')
+        }
+
+        d3.select("td#jump_height").text(jump_height.toFixed(2) + ' cm')
+        d3.select("td#rsi_mod").text(rsi_mod.toFixed(2))
+        d3.select("td#concentric_impulse").text(concentric_impulse.toFixed(1) + ' N s')
+
     } else {
         d3.select("td#bodyweight").text('No data')
+        d3.select("td#jump_height").text('No data')
+        d3.select("td#rsi_mod").text('No data')
+        d3.select("td#concentric_impulse").text('No data')
     }
 
-    let average_practice_load = d3.mean(data.catapult_data.filter(d => helper.getOpponent(teams, d.activity_name) === 'Practice'), d=> d.total_player_load)
-    d3.select("td#average_practice_load").text(average_practice_load.toFixed(1))
+    if (data.catapult_data.length > 0) {
+        let average_practice_load = d3.mean(data.catapult_data.filter(d => helper.getOpponent(teams, d.activity_name) === 'Practice'), d => d.total_player_load),
+            average_game_load = d3.mean(data.catapult_data.filter(d => (helper.getOpponent(teams, d.activity_name) !== 'Practice') & (helper.getOpponent(teams, d.activity_name) !== 'Other')), d => d.total_player_load),
+            practice_max_vel = d3.max(data.catapult_data.filter(d => helper.getOpponent(teams, d.activity_name) === 'Practice'), d => d.max_vel),
+            game_max_vel = d3.max(data.catapult_data.filter(d => (helper.getOpponent(teams, d.activity_name) !== 'Practice') & (helper.getOpponent(teams, d.activity_name) !== 'Other')), d => d.max_vel)
 
-    let average_game_load = d3.mean(data.catapult_data.filter(d => (helper.getOpponent(teams, d.activity_name) !== 'Practice') & (helper.getOpponent(teams, d.activity_name) !== 'Other')), d=> d.total_player_load)
-    d3.select("td#average_game_load").text(average_game_load.toFixed(1))
+        d3.select("td#average_practice_load").text(average_practice_load.toFixed(1))
+        d3.select("td#average_game_load").text(average_game_load.toFixed(1))
+        d3.select("td#practice_max_vel").text(practice_max_vel.toFixed(2) + ' m/s')
+        d3.select("td#game_max_vel").text(game_max_vel.toFixed(2) + ' m/s')
 
-    let practice_max_vel = d3.max(data.catapult_data.filter(d => helper.getOpponent(teams, d.activity_name) === 'Practice'), d=> d.max_vel)
-    d3.select("td#practice_max_vel").text(practice_max_vel.toFixed(2))
+    } else {
+        d3.select("td#average_practice_load").text('No data')
+        d3.select("td#average_game_load").text('No data')
+        d3.select("td#practice_max_vel").text('No data')
+        d3.select("td#game_max_vel").text('No data')
+    }
 
-    let game_max_vel = d3.max(data.catapult_data.filter(d => (helper.getOpponent(teams, d.activity_name) !== 'Practice') & (helper.getOpponent(teams, d.activity_name) !== 'Other')), d=> d.max_vel)
-    d3.select("td#game_max_vel").text(game_max_vel.toFixed(2))
 
 }
 
@@ -47,10 +67,58 @@ function getWeight(d) {
 function getWeightChange(currentWeight, passedWeights) {
 
     if (passedWeights.length > 3) {
-        let average = d3.mean(passedWeights.slice(0,3), d => d)
-        return (currentWeight-average)/average
-    } else if (passedWeights.length>0) { 
+        let average = d3.mean(passedWeights.slice(0, 3), d => d)
+        return currentWeight - average
+    } else if (passedWeights.length > 0) {
         let average = d3.mean(passedWeights, d => d)
-        return (currentWeight - average)/average
+        return currentWeight - average
     }
+}
+
+
+export function updateLastGamesTable(data) {
+
+    let g = d3.select('#on-ice'),
+        features = [
+        { name: '5v5 TOI', id: 'TOI' },
+        { name: '5v5 ixG', id: 'ixG' },
+        { name: '5v5 xGF%', id: 'xGF' },
+        { name: '5v5 OGPs', id: 'OGP' },
+        { name: '5v5 Contested LPR win%', id: 'LPR' },
+        { name: '5v5 Entry Success %', id: 'Entry' },
+        { name: '5v5 Exit Success %', id: 'Exit' }]
+
+
+    g.selectAll('th').remove()
+    g.selectAll('tr').remove()
+    g.append('tr').attr('id', 'header').append('th').html('Last 5 games').attr('class', 'title')
+    features.forEach(d => g.append('tr').attr('id', d.id).append('td').html(d.name))
+
+
+    let gamesToShow = []
+
+    if (data.player_ratings.length > 5) {
+        gamesToShow = data.player_ratings.slice(-5)
+    } else {
+        gamesToShow = data.player_ratings
+    }
+
+    console.log(gamesToShow)
+
+    gamesToShow.forEach(d => updateValues(g, d, features))
+
+}
+
+function updateValues(svg, dict, features) {
+    svg.select('#header').append('th').attr('class', 'value').html(dict.opponent)
+    features.forEach(d => {
+        svg.select('#' + d.id).append('td').attr('class', 'value').html(dict[d.name])
+    })
+
+
+}
+
+export function lastGamesTableBuilder() {
+
+
 }
