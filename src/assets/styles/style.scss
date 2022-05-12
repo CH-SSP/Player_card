@@ -126,13 +126,13 @@ table {
 }
 
 td {
-  padding: 15px;
+  padding: 10px;
 }
 
 tr, th {
   border-bottom: 1px solid #ddd;
   height:40px;
-  padding: 15px;
+  padding: 10px;
 }
 tr:last-child {
   border : none
@@ -202,6 +202,13 @@ tr:last-child {
   font-size: 12px;
   stroke: white;
   stroke-width: 0.3px
+
+}
+
+.cartesianlabel {
+  text-align: center;
+  text-anchor: left;
+  font-size: 14px;
 
 }
 

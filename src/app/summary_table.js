@@ -103,8 +103,6 @@ export function updateLastGamesTable(data) {
         gamesToShow = data.player_ratings
     }
 
-    console.log(gamesToShow)
-
     gamesToShow.forEach(d => updateValues(g, d, features))
 
 }

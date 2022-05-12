@@ -1,7 +1,7 @@
 {
   "name": "scrollytelling-template-lite",
   "version": "1.0.0",
-  "homepage" :"https://ch-ssp.github.io/Player_card/",
+  "homepage": "https://ch-ssp.github.io/Player_card/",
   "description": "Le Devoir's scrollytelling template (lite version)",
   "main": "./dist/bundle.js",
   "scripts": {
@@ -13,9 +13,7 @@
     "sass-lint": "sass-lint -c sass-lint.yml -v -q",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    
-  },
+  "repository": {},
   "keywords": [
     "scrollytelling",
     "data-visualization",
@@ -23,11 +21,10 @@
   ],
   "author": "Antoine Beland and Jean Philippe Corbeil",
   "license": "MIT",
-  "bugs": {
-    
-  },
+  "bugs": {},
   "dependencies": {
     "d3": "^7.3.0",
+    "d3-hexbin": "^0.2.2",
     "exceljs": "^4.3.0",
     "normalize.css": "^8.0.1",
     "read-excel-file": "^5.2.28",

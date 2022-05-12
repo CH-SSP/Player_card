@@ -24,47 +24,50 @@
     </section>
 
     <section class="sticky" id="dates">
-        <select name="players" id="player-select" >
-          <option value="None">Select a player</option>
-        </select>
-        <div id="viz"> </div>
+      <select name="teams" id="team-select">
+        <option value="None">Select a team</option>
+      </select>
+      <select name="players" id="player-select">
+        <option value="None">Select a player</option>
+      </select>
+      <div id="viz"> </div>
     </section>
 
     <section class=text-section id="player-info" class="end">
-      <h1 style = "text-align: center; margin-bottom:0"></h1>
-      <p style = "text-align: center;"></p>
+      <h1 style="text-align: center; margin-bottom:0"></h1>
+      <p style="text-align: center;"></p>
       <table>
         <tr>
           <td>Bodyweight</td>
-          <td class = 'value' id="bodyweight"></td>
+          <td class='value' id="bodyweight"></td>
         </tr>
         <tr>
           <td>Average Practice Load</td>
-          <td class = 'value' id="average_practice_load"> </td>
+          <td class='value' id="average_practice_load"> </td>
         </tr>
         <tr>
           <td>Average Game Load</td>
-          <td class = 'value' id="average_game_load"></td>
+          <td class='value' id="average_game_load"></td>
         </tr>
         <tr>
           <td>Practice Max Velocity</td>
-          <td class = 'value' id='practice_max_vel'></td>
+          <td class='value' id='practice_max_vel'></td>
         </tr>
         <tr>
           <td>Game Max Velocity</td>
-          <td class = 'value' id='game_max_vel'></td>
+          <td class='value' id='game_max_vel'></td>
         </tr>
         <tr>
           <td>Most recent Jump Height</td>
-          <td class = 'value' id='jump_height'></td>
+          <td class='value' id='jump_height'></td>
         </tr>
         <tr>
           <td>Most recent RSI Mod</td>
-          <td class = 'value' id='rsi_mod'></td>
+          <td class='value' id='rsi_mod'></td>
         </tr>
         <tr>
           <td>Most recent Concentric Impulse</td>
-          <td class = 'value' id='concentric_impulse'></td>
+          <td class='value' id='concentric_impulse'></td>
         </tr>
       </table>
     </section>
@@ -86,9 +89,7 @@
     <section class=text-section>
       <h1>On-Ice Analytics</h1>
       <h2>Summary</h2>
-      <table id = 'on-ice'>
-        
-        
+      <table id='on-ice'>
       </table>
       <h2>Offensive generating plays</h2>
       <div class="viz" id="offensive"></div>
@@ -99,11 +100,11 @@
     <section class=text-section>
       <h1>Jump Metrics</h1>
       <h2>Jump Cartesian Plot</h2>
-      <div class="viz" id=""></div>
+      <div class="viz" id="cartesian"></div>
       <h2>Longitudinal Jump Height</h2>
-      <div class="viz" id=""></div>
+      <div class="viz" id="JumpHeight"></div>
       <h2>Asymmetry Tracker</h2>
-      <div class="viz" id=""></div>
+      <div class="viz" id="asymmetry"></div>
     </section>
 
 
