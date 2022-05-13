@@ -1,6 +1,15 @@
+/**
+ * File with the function used to create and change the date slider
+ */
+
 import * as d3 from 'd3';
 import * as helper from './helper.js'
 
+
+/** Create the slider
+ * 
+ * @returns 
+ */
 export function makeSlider() {
 
     let fullWidth = 700
@@ -26,7 +35,12 @@ export function makeSlider() {
     return { 'svg': svg, 'margin': margin, 'width': width, 'height': height, 'x': x, 'xAxis': xAxis, 'box': box }
 }
 
-
+/** Updates the slider when a new player is selected, operates the brush and runs whenBrushed when the dates change
+ * 
+ * @param {*} data 
+ * @param {*} params 
+ * @param {*} whenBrushed 
+ */
 export function dateSlider(data, params, whenBrushed) {
 
     let dates = helper.getDatesWithDataEntry(data)
@@ -86,9 +100,13 @@ export function dateSlider(data, params, whenBrushed) {
 
 }
 
+/** Prints the limits of the time range above the slider
+ * 
+ * @param {*} g 
+ * @param {*} interval 
+ */
 function updateLimits(g, interval) { 
 
     let formatTime = d3.timeFormat('%b %Y')
     g.selectAll('#limits').text(formatTime(interval[0]) + ' - '+ formatTime(interval[1]))
-    //g.selectAll('#second').text(formatTime(interval[1]))
 }

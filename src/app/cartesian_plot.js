@@ -1,8 +1,18 @@
+/**
+ * File for functions specific to the cartesian plot
+ */
+
 import * as d3 from 'd3';
-import { color } from 'd3';
 import * as d3hexbin from 'd3-hexbin';
 import * as helper from './helper.js';
 
+
+
+/** Gets the vald data for the whole team
+ * 
+ * @param {*} data 
+ * @returns 
+ */
 export function getCompleteValdData(data) {
 
     let array = [];
@@ -21,6 +31,14 @@ export function getCompleteValdData(data) {
 
 }
 
+/** Appends the x axis
+ * 
+ * @param {*} g 
+ * @param {*} width 
+ * @param {*} height 
+ * @param {*} xLabel 
+ * @returns 
+ */
 function appendXAxis(g, width, height, xLabel) {
 
     let x = d3.scaleLinear().range([0, width]);
@@ -41,6 +59,14 @@ function appendXAxis(g, width, height, xLabel) {
 
 }
 
+/** Builds the cartesian plot elements and returns the parameters
+ * 
+ * @param {*} id 
+ * @param {*} dim 
+ * @param {*} xLabel 
+ * @param {*} yLabel 
+ * @returns 
+ */
 export function cartesianBuilder(id, dim, xLabel, yLabel) {
 
     var width = dim.fullWidth - dim.margin.left - dim.margin.right,
@@ -86,6 +112,13 @@ export function cartesianBuilder(id, dim, xLabel, yLabel) {
 
 }
 
+/** Appends the legend
+ * 
+ * @param {*} g 
+ * @param {*} width 
+ * @param {*} hexbin 
+ * @param {*} color 
+ */
 function appendLegend(g, width, hexbin, color) {
 
     let legend = g.append('g').attr('class', 'legend').attr('transform', 'translate(' + (width + 40) / 2 + ',' + (-20) + ')'),
@@ -149,6 +182,12 @@ function appendLegend(g, width, hexbin, color) {
 
 }
 
+/** Appends the text element in the four quadrants
+ * 
+ * @param {*} g 
+ * @param {*} height 
+ * @param {*} width 
+ */
 function appendQuadrant(g, height, width) {
 
     let quadrants = g.append('g')
@@ -180,7 +219,7 @@ function appendQuadrant(g, height, width) {
         .text('High STR & Low SPD')
 }
 
-/**
+/**  Updates the x scale and the x axis
  * 
  * @param {*} data 
  * @param {*} g 
@@ -189,7 +228,6 @@ function appendQuadrant(g, height, width) {
  */
 function updateXAxis(data, g, x, metric) {
 
-    //x.domain(d3.extent(data, d => d[metric]))
     x.domain([Math.max(0, d3.min(data, d => d[metric])), d3.max(data, d => d[metric])])
 
     g.selectAll(".x-axis")
@@ -200,7 +238,7 @@ function updateXAxis(data, g, x, metric) {
     return x
 }
 
-/**
+/** Updates the color scale 
  * 
  * @param {*} data 
  * @param {*} color 
@@ -212,7 +250,7 @@ function updateColor(data, color) {
 
 }
 
-/**
+/** Appends the hexagons
  * 
  * @param {*} g 
  * @param {*} hexbin 
@@ -240,6 +278,17 @@ function appendHexbins(g, hexbin, data, color) {
 
 }
 
+/** Appends the points
+ * 
+ * @param {*} data 
+ * @param {*} g 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} tooltip 
+ * @param {*} dates 
+ * @param {*} xMetric 
+ * @param {*} yMetric 
+ */
 function appendPoints(data, g, x, y, tooltip, dates, xMetric, yMetric) {
 
     let r = d3.scaleSqrt().domain(d3.extent(data, d => d.jump_height)).range([5, 20]),
@@ -326,6 +375,14 @@ function appendPoints(data, g, x, y, tooltip, dates, xMetric, yMetric) {
 
 }
 
+/** Updates the cartesian plot
+ * 
+ * @param {*} teamData 
+ * @param {*} individualData 
+ * @param {*} params 
+ * @param {*} tooltip 
+ * @param {*} dates 
+ */
 export function cartesianUpdate(teamData, individualData, params, tooltip, dates) {
 
     params.svg.selectAll('.cartesianlabel').remove()

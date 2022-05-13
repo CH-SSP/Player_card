@@ -1,7 +1,10 @@
+/**
+ * File for functions to process data or used in multiple viz
+ */
+
 import * as d3 from 'd3';
 
-
-/**
+/** Creates the drop down list for team selection
  * 
  * @param {*} data 
  */
@@ -24,7 +27,7 @@ export function teamList() {
 
 }
 
-/**
+/** Creates the drop down list for player selection
  * 
  * @param {*} data 
  */
@@ -38,13 +41,10 @@ export function playerList(data) {
     for (let player of players) {
         d3.select('#player-select').append("option").html(player.last_name + ', ' + player.first_name + ' (' + player.jersey + ')').attr("value", player.first_name + ' ' + player.last_name);
     }
-
-
-
 }
 
 
-/**
+/** Gets the info for every player
  * 
  * @param {*} data 
  * @returns 
@@ -63,7 +63,7 @@ function getPlayersInfo(data) {
 
 }
 
-/**
+/** Gets every date with a data entry for the slider viz
  * 
  * @param {*} data 
  * @returns 
@@ -92,7 +92,7 @@ export function getDatesWithDataEntry(data) {
     return (dates)
 }
 
-/**
+/** Gets every opponent team
  * 
  * @param {*} data 
  * @returns 
@@ -104,7 +104,7 @@ export function getTeams(data) {
         ...new Set(data.map(d => d.catapult_data.map(d => {
             let splitted = d.activity_name.split(' ')
             if (splitted[0] == 'LR' && splitted[1] == 'vs') {
-                return splitted[2]//.slice(0,3)
+                return splitted[2]
             }
         })).flat())
     ]
@@ -160,7 +160,7 @@ export function getCatapultData(data, dates, teams) {
 
 }
 
-/** Obtains the data for the catapult viz
+/** Obtains the data from the player ratings
  * 
  * @param {Array} data 
  * @param {Array} dates
@@ -185,7 +185,7 @@ export function getPlayerRatingsData(data, dates) {
 
 }
 
-/** Obtains the data for the catapult viz
+/** Obtains the data for the jump metrics viz (from Vald API)
  * 
  * @param {Array} data 
  * @param {Array} dates
@@ -257,6 +257,11 @@ export function chartBuilder(id, dim, yLabel, legend) {
 
 }
 
+/**
+ * 
+ * @param {*} g 
+ * @param {*} width 
+ */
 function teamLegend(g, width) {
 
     let size = 13
@@ -268,7 +273,7 @@ function teamLegend(g, width) {
         .attr('width', size)
         .attr('height', size)
         .attr('x', 0 + 5)
-        .attr('y', -size+2)
+        .attr('y', -size + 2)
         .attr('fill', "#0061ff")
 
     legend.append('text')
@@ -281,7 +286,7 @@ function teamLegend(g, width) {
         .attr('width', size)
         .attr('height', size)
         .attr('x', 0 - 60)
-        .attr('y', -size+2)
+        .attr('y', -size + 2)
         .attr('fill', "rgb(18,27,104)")
 
     legend.append('text')
@@ -292,7 +297,7 @@ function teamLegend(g, width) {
 
 }
 
-/**
+/** Initializes the x scale and appends the x axis
  * 
  * @param {*} g 
  * @param {*} width 
@@ -313,7 +318,7 @@ export function appendXAxis(g, width, height) {
 
 }
 
-/**
+/** Updates the x scale and the x axis
  * 
  * @param {*} data 
  * @param {*} g 
@@ -322,7 +327,6 @@ export function appendXAxis(g, width, height) {
  */
 export function updateXAxis(data, g, x, interval) {
 
-    //x.domain(d3.extent(data, function (d) { return d.date; }))
     x.domain(interval)
 
     g.selectAll(".x-axis")
@@ -333,7 +337,7 @@ export function updateXAxis(data, g, x, interval) {
     return x
 }
 
-/**
+/** Initializes the y scale and appends the y axis
  * 
  * @param {*} g 
  * @param {*} height 
@@ -359,7 +363,7 @@ export function appendYAxis(g, height, marginLeft, yLabel) {
 
 }
 
-/**
+/** Updates the y scale and the y axis
  * 
  * @param {*} data 
  * @param {*} g 
@@ -378,9 +382,10 @@ export function updateYAxis(data, g, y, metric) {
     return y
 }
 
-/**
+/** Appends two gradients, one for the dates with a game and one for the dates with a practice
  * 
  * @param {*} g 
+ * @param {*} height 
  */
 export function appendGradient(g, height) {
 
@@ -419,7 +424,7 @@ export function appendGradient(g, height) {
 
 }
 
-/**
+/** Appends a band from -1 standard deviation to +1 standard deviation
  * 
  * @param {*} g 
  */
@@ -430,7 +435,7 @@ export function appendDeviationBand(g) {
         .attr('opacity', 0.1)
 }
 
-/**
+/** Updates the deviation band
  * 
  * @param {*} data 
  * @param {*} g 
@@ -450,24 +455,3 @@ export function updateDeviationBand(data, g, x, y, metric) {
         .attr('height', Math.min(y(mean - dev) - y(mean + dev), y.range()[0] - y(mean + dev)))
 
 }
-
-export function addCatapultToTable(data, player) {
-
-    let playerData = data.filter(d => d['athlete_name'] == player).sort((a, b) => d3.descending(a.end_time, b.end_time))
-    let practiceData = playerData.filter(d => d['activity_name'].slice(0, 6) != "HOCKEY")[0]
-    let practiceLoad = practiceData['total_player_load']
-    let practiceMaxVel = practiceData['max_vel']
-    let gameData = playerData.filter(d => d['activity_name'].slice(0, 6) == "HOCKEY")[0]
-    let gameLoad = gameData['total_player_load']
-    let gameMaxVel = gameData['max_vel']
-
-
-    d3.select("td#average_practice_load").text(String(Math.round(practiceLoad)))
-    d3.select("td#average_game_load").text(String(Math.round(gameLoad)))
-    d3.select("td#practice_max_vel").text(String(practiceMaxVel.toPrecision(3)) + " m/s")
-    d3.select("td#game_max_vel").text(String(gameMaxVel.toPrecision(3)) + " m/s")
-
-}
-
-
-

@@ -1,6 +1,11 @@
 import * as d3 from 'd3';
 import * as helper from './helper.js'
 
+/** Updates the summary table when a new player is selected
+ * 
+ * @param {*} data 
+ * @param {*} teams 
+ */
 export function updateTable(data, teams) {
 
     if (data.vald_data.length > 0) {
@@ -16,7 +21,7 @@ export function updateTable(data, teams) {
         } else if (weights.length == 0) {
             d3.select("td#bodyweight").text(currentWeight.toFixed(1) + ' kg')
         }
-        
+
         d3.select("td#jump_height").text(jump_height.toFixed(2) + ' cm')
         d3.select("td#rsi_mod").text(rsi_mod.toFixed(2))
         d3.select("td#concentric_impulse").text(concentric_impulse.toFixed(1) + ' N s')
@@ -46,9 +51,13 @@ export function updateTable(data, teams) {
         d3.select("td#game_max_vel").text('No data')
     }
 
-
 }
 
+/** Gets the most recent weight entry
+ * 
+ * @param {*} d 
+ * @returns 
+ */
 function getWeight(d) {
 
     let weight = d.reduce((a, d) => {
@@ -64,6 +73,12 @@ function getWeight(d) {
 
 }
 
+/** Gets the change in weight based on the average of last three weight ins
+ * 
+ * @param {*} currentWeight 
+ * @param {*} passedWeights 
+ * @returns 
+ */
 function getWeightChange(currentWeight, passedWeights) {
 
     if (passedWeights.length > 3) {
@@ -75,7 +90,10 @@ function getWeightChange(currentWeight, passedWeights) {
     }
 }
 
-
+/** Updates the second table with the summary of the last five games
+ * 
+ * @param {*} data 
+ */
 export function updateLastGamesTable(data) {
 
     let g = d3.select('#on-ice'),
@@ -107,16 +125,17 @@ export function updateLastGamesTable(data) {
 
 }
 
+/** Updates the values in the table for each game
+ * 
+ * @param {*} svg 
+ * @param {*} dict 
+ * @param {*} features 
+ */
 function updateValues(svg, dict, features) {
     svg.select('#header').append('th').attr('class', 'value').html(dict.opponent)
     features.forEach(d => {
         svg.select('#' + d.id).append('td').attr('class', 'value').html(dict[d.name])
     })
-
-
-}
-
-export function lastGamesTableBuilder() {
 
 
 }

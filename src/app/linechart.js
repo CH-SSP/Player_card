@@ -29,7 +29,7 @@ export function lineChartUpdate(data, params, tooltip, metric, interval) {
 
 
 
-/**
+/** Updates the line between points
  * 
  * @param {*} data 
  * @param {*} g 
@@ -53,7 +53,7 @@ export function updateLine(data, g, x, y, metric) {
         )
 }
 
-/**
+/** Update the points when a new player is selected
  * 
  * @param {*} data 
  * @param {*} g 

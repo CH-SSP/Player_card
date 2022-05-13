@@ -1,12 +1,15 @@
+/**
+ * File for functions specific to barcharts
+ */
+
 import * as d3 from 'd3';
 import * as helper from "./helper.js";
 
 
-/** Update the barchart elements
+/** Updates the barchart
  * 
  * @param {*} data 
  * @param {*} params 
- * @returns 
  */
 export function barChartUpdate(data, params, tooltip, metric, interval, teamLogo = false) {
 
@@ -16,7 +19,7 @@ export function barChartUpdate(data, params, tooltip, metric, interval, teamLogo
 
     if (data.length == 0) { return; }
 
-    data=data.filter(d => d[metric] != undefined & !isNaN(d[metric]))
+    data = data.filter(d => d[metric] != undefined & !isNaN(d[metric]))
 
     let numberOfDays = d3.timeDay.count(interval[0], interval[1])
     let barWidth = 0.9 * params.width / (numberOfDays + 2)
@@ -31,6 +34,15 @@ export function barChartUpdate(data, params, tooltip, metric, interval, teamLogo
 
 }
 
+/** Appends the labels for the opponents
+ * 
+ * @param {*} data 
+ * @param {*} g 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} metric 
+ * @param {*} numberOfDays 
+ */
 function teamLabel(data, g, x, y, metric, numberOfDays) {
 
     g.selectAll('g.label').remove()
@@ -50,13 +62,21 @@ function teamLabel(data, g, x, y, metric, numberOfDays) {
             .attr('y', d => y(d[metric]))
             .text(d => d.type)
 
-        let simulation = getSimulation(data,x,y,metric)
+        let simulation = getSimulation(data, x, y, metric)
         simulate(simulation, g)
 
     }
 }
 
-function getSimulation(data,x,y,metric) {
+/** Simulation for the team labels
+ * 
+ * @param {*} data 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} metric 
+ * @returns 
+ */
+function getSimulation(data, x, y, metric) {
     return d3.forceSimulation(data)
         .alphaDecay(0.4)
         .velocityDecay(0.8)
@@ -72,7 +92,11 @@ function getSimulation(data,x,y,metric) {
         )
 }
 
-
+/** Applies the repulsion to the team labels
+ * 
+ * @param {*} simulation 
+ * @param {*} g 
+ */
 function simulate(simulation, g) {
     simulation.on('tick', () => {
         g.selectAll('text.label')
@@ -81,7 +105,7 @@ function simulate(simulation, g) {
     })
 }
 
-/**
+/** Updates the x scale and axis
  * 
  * @param {*} data 
  * @param {*} g 
@@ -90,7 +114,6 @@ function simulate(simulation, g) {
  */
 export function updateXAxis(g, x, interval) {
 
-    //x.domain(d3.extent(data, function (d) { return d.date; }))
     x.domain([d3.timeDay.offset(interval[0], -1), d3.timeDay.offset(interval[1], 1)])
 
     g.selectAll(".x-axis")
@@ -101,6 +124,15 @@ export function updateXAxis(g, x, interval) {
     return x
 }
 
+/** Appends the value labels
+ * 
+ * @param {*} data 
+ * @param {*} g 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} metric 
+ * @param {*} numberOfDays 
+ */
 function appendLabel(data, g, x, y, metric, numberOfDays) {
 
     g.selectAll('.label').remove()
@@ -121,7 +153,7 @@ function appendLabel(data, g, x, y, metric, numberOfDays) {
 
 }
 
-/**
+/** Appends the bars
  * 
  * @param {*} data 
  * @param {*} g 
@@ -164,49 +196,3 @@ export function appendBars(id, data, g, x, y, tooltip, metric, barWidth) {
             return tooltip.style("visibility", "hidden");
         });
 }
-
-
-// function fillData(data, dates, teams) {
-
-//     let sparsedData = helper.getCatapultData(data, dates, teams)
-//     let len = sparsedData.length
-
-//     let filledData = d3.timeDay.range(dates[0], sparsedData[0].date).map(d => {
-//         return {
-//             'date': d,
-//             'name': null,
-//             'type': null,
-//             'pace': null,
-//             'maxvel': null,
-//             'load': 0
-
-//         }
-//     })
-
-//     sparsedData.forEach((d, i) => {
-//         filledData.push(d)
-//         if (i < len - 1 && d3.timeDay.count(d.date, sparsedData[i + 1].date) > 1) {
-
-//             let newDates = d3.timeDay.range(d.date, sparsedData[i + 1].date)
-//             newDates.shift()
-
-//             filledData = [...filledData,
-//             ...newDates.map(d => {
-//                 return {
-//                     'date': d,
-//                     'name': 'fill',
-//                     'type': null,
-//                     'pace': null,
-//                     'maxvel': null,
-//                     'load': 0
-
-//                 }
-//             })]
-//         }
-//     })
-
-//     return filledData
-
-
-
-// }

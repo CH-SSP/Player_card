@@ -1,9 +1,8 @@
+/**
+ * File for everything related to the horizontal asymmetry barchart
+ */
+
 import * as d3 from 'd3';
-import * as helper from './helper.js';
-
-export function getLastestAsymmetry(data) {
-
-}
 
 /** Update the barchart elements
  * 
@@ -44,6 +43,11 @@ export function horizontalBarChartUpdate(data, params, tooltip) {
 
 }
 
+/** Appends the legend
+ * 
+ * @param {*} g 
+ * @param {*} width 
+ */
 function horizontalLegend(g, width) {
 
     let size = 13
@@ -119,7 +123,12 @@ export function horizontalBarchartBuilder(id, dim, xLabel) {
 
 }
 
-
+/** Changes the side of the tick when a bar is in the negatives and covers it
+ * 
+ * @param {*} data 
+ * @param {*} g 
+ * @param {*} x 
+ */
 function changeTickSide(data, g, x) {
 
     let textLen = [];
@@ -137,7 +146,13 @@ function changeTickSide(data, g, x) {
 
 }
 
-
+/** Appends the labels on top of bars
+ * 
+ * @param {*} data 
+ * @param {*} g 
+ * @param {*} x 
+ * @param {*} y 
+ */
 function appendLabel(data, g, x, y) {
 
     g.selectAll('.label').remove()
@@ -148,7 +163,6 @@ function appendLabel(data, g, x, y) {
         .data(['Peak Landing Force', 'Landing RFD', 'Landing Impulse'])
         .enter()
         .append('text')
-        //.attr('class', 'cartesianlabel')
         .attr('x', d => data[d].value < 0 ? x(data[d].value) - 15 : x(data[d].value) + 15)
         .attr('y', d => y(d) + y.bandwidth() / 2)
         .text(d => Math.round(data[d].value))
@@ -160,7 +174,7 @@ function appendLabel(data, g, x, y) {
 
 }
 
-/**
+/** Appends the bars
  * 
  * @param {*} data 
  * @param {*} g 
@@ -202,7 +216,7 @@ function appendBars(id, data, g, x, y, tooltip) {
         });
 }
 
-/**
+/** Appends the bars for the player average
  * 
  * @param {*} data 
  * @param {*} g 
@@ -228,6 +242,14 @@ function appendMeanBars(data, g, x, y) {
 
 }
 
+/** Initializes the x scale and appends the x axis 
+ * 
+ * @param {*} g 
+ * @param {*} width 
+ * @param {*} height 
+ * @param {*} xLabel 
+ * @returns 
+ */
 function appendXAxis(g, width, height, xLabel) {
 
     let x = d3.scaleLinear().range([0, width]);
@@ -263,7 +285,7 @@ function appendXAxis(g, width, height, xLabel) {
 
 }
 
-/**
+/** Updates the x scale and the x axis
  * 
  * @param {*} data 
  * @param {*} g 
@@ -287,7 +309,7 @@ function updateXAxis(data, g, x) {
     return x
 }
 
-/**
+/** Initializes the y scale and appends the y axis
  * 
  * @param {*} g 
  * @param {*} height 
@@ -309,7 +331,7 @@ function appendYAxis(g, width, height) {
 
 }
 
-/**
+/** Appends the horizontal gradient for the bars
  * 
  * @param {*} g 
  */
