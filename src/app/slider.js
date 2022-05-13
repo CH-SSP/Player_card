@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
-
-import { addBodyWeight, getDatesWithDataEntry } from "./helper.js"
+import * as helper from './helper.js'
 
 export function makeSlider() {
 
@@ -30,7 +29,7 @@ export function makeSlider() {
 
 export function dateSlider(data, params, whenBrushed) {
 
-    let dates = getDatesWithDataEntry(data)
+    let dates = helper.getDatesWithDataEntry(data)
 
     params.x.domain(d3.extent(dates, function (d) { return d.date; }));
 
@@ -65,18 +64,10 @@ export function dateSlider(data, params, whenBrushed) {
     params.box.append('g')
         .attr('class', 'limits')
         .append('text')
-        .attr('id', 'first')
-        .attr('transform', 'translate(0,-5)')
+        .attr('id', 'limits')
+        .attr('transform', 'translate('+params.width/2+',-5)')
         .attr('font-size', 12)
-
-    params.box.select('.limits')
-        .append('text')
-        .attr('id', 'second')
-        .attr('transform', 'translate('+params.width+',-5)')
-        .attr('font-size', 12)
-        .attr('text-anchor', 'end')
-
-
+        .attr('text-anchor', 'middle')
 
     var brush = d3.brushX()
         .extent([[0, 0], [params.width, params.height]])
@@ -98,6 +89,6 @@ export function dateSlider(data, params, whenBrushed) {
 function updateLimits(g, interval) { 
 
     let formatTime = d3.timeFormat('%b %Y')
-    g.selectAll('#first').text(formatTime(interval[0]))
-    g.selectAll('#second').text(formatTime(interval[1]))
+    g.selectAll('#limits').text(formatTime(interval[0]) + ' - '+ formatTime(interval[1]))
+    //g.selectAll('#second').text(formatTime(interval[1]))
 }
