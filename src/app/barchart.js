@@ -16,6 +16,8 @@ export function barChartUpdate(data, params, tooltip, metric, interval, teamLogo
 
     if (data.length == 0) { return; }
 
+    data=data.filter(d => d[metric] != undefined & !isNaN(d[metric]))
+
     let numberOfDays = d3.timeDay.count(interval[0], interval[1])
     let barWidth = 0.9 * params.width / (numberOfDays + 2)
 

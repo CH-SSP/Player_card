@@ -19,7 +19,9 @@ export function lineChartUpdate(data, params, tooltip, metric, interval) {
     let x = helper.updateXAxis(data, params.svg, params.x, interval),
         y = helper.updateYAxis(data, params.svg, params.y, metric)
 
+    if (data.length > 1) {
         helper.updateDeviationBand(data, params.svg, x, y, metric)
+    }
     updateLine(data, params.svg, x, y, metric)
     updatePoints(data, params.svg, x, y, tooltip, metric)
 

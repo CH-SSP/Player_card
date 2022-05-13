@@ -200,11 +200,11 @@ export function getValdData(data, dates) {
             'name': null,
             'type': null,
             'jump_height': d.JUMP_HEIGHT_IMP_MOM,
-            'rsi_mod' : d.RSI_MODIFIED,
+            'rsi_mod': d.RSI_MODIFIED,
             'concentric_impulse': d.CONCENTRIC_IMPULSE,
-            'Landing Impulse Asymmetry' : d.LANDING_IMPULSE,
-            'Landing RFD Asymmetry' : d.LANDING_RFD,
-            'Peak Landing Force Asymmetry' : d.PEAK_LANDING_FORCE,
+            'Landing Impulse': d.LANDING_IMPULSE,
+            'Landing RFD': d.LANDING_RFD,
+            'Peak Landing Force': d.PEAK_LANDING_FORCE,
         }
     })
         .sort((a, b) => d3.ascending(a.date, b.date))
@@ -220,7 +220,7 @@ export function getValdData(data, dates) {
  * @param {*} id 
  * @returns 
  */
-export function chartBuilder(id, dim) {
+export function chartBuilder(id, dim, yLabel, legend) {
 
     var width = dim.fullWidth - dim.margin.left - dim.margin.right,
         height = dim.fullHeight - dim.margin.top - dim.margin.bottom;
@@ -241,15 +241,54 @@ export function chartBuilder(id, dim) {
     appendGradient(svg, height)
     appendDeviationBand(svg)
 
+    if (legend == 'Team Legend') {
+        teamLegend(svg, width)
+    }
+
     return {
         'id': id,
         'svg': svg,
         'width': width,
         'height': height,
         'x': appendXAxis(svg, width, height),
-        'y': appendYAxis(svg, height)
+        'y': appendYAxis(svg, height, dim.margin.left, yLabel)
     }
 
+
+}
+
+function teamLegend(g, width) {
+
+    let size = 13
+    let legend = g.append('g')
+        .attr('transform', 'translate(' + width / 2 + ',' + (-20) + ')')
+        .attr('class', 'legend')
+
+    legend.append('rect')
+        .attr('width', size)
+        .attr('height', size)
+        .attr('x', 0 + 5)
+        .attr('y', -size+2)
+        .attr('fill', "#0061ff")
+
+    legend.append('text')
+        .attr('x', size + 5 + 5)
+        .attr('y', 0)
+        .attr('font-size', 12)
+        .text('Practice')
+
+    legend.append('rect')
+        .attr('width', size)
+        .attr('height', size)
+        .attr('x', 0 - 60)
+        .attr('y', -size+2)
+        .attr('fill', "rgb(18,27,104)")
+
+    legend.append('text')
+        .attr('x', size + 5 - 60)
+        .attr('y', 0)
+        .attr('font-size', 12)
+        .text('Game')
 
 }
 
@@ -300,13 +339,21 @@ export function updateXAxis(data, g, x, interval) {
  * @param {*} height 
  * @returns 
  */
-export function appendYAxis(g, height) {
+export function appendYAxis(g, height, marginLeft, yLabel) {
 
     let y = d3.scaleLinear().range([height, 0]);
 
+
     g.append("g")
         .call(d3.axisLeft(y))
-        .attr("class", "y-axis");
+        .attr("class", "y-axis")
+        .call(g => g.append("text")
+            .attr("x", -marginLeft)
+            .attr("y", -20)
+            .attr("text-anchor", "start")
+            .attr('fill', 'currentColor')
+            .attr('font-size', 12)
+            .text(yLabel));
 
     return y;
 
@@ -392,53 +439,15 @@ export function appendDeviationBand(g) {
  */
 export function updateDeviationBand(data, g, x, y, metric) {
 
-    let dev = d3.deviation(data, d => d[metric])
-    let mean = d3.mean(data, d => d[metric])
+    let bandData = data.filter(d => d[metric] != undefined & !isNaN(d[metric]))
+    let dev = d3.deviation(bandData, d => d[metric]),
+        mean = d3.mean(bandData, d => d[metric])
 
     g.select('rect.dev')
         .attr('x', x.range()[0])
         .attr('y', Math.max(y(mean + dev), y.range()[1]))
         .attr('width', x.range()[1])
         .attr('height', Math.min(y(mean - dev) - y(mean + dev), y.range()[0] - y(mean + dev)))
-
-}
-
-
-
-export function addBodyWeight(data, player) {
-
-
-    try {
-        let playerData = data.filter(d => d.name == player)[0].data
-
-        let bodyWeight = playerData.filter(d => d["BODY_MASS"])
-        let mass = bodyWeight[0]["BODY_MASS"]
-
-        if (bodyWeight.length > 3) {
-            let mean = (bodyWeight[1]["BODY_MASS"] + bodyWeight[2]["BODY_MASS"] + bodyWeight[3]["BODY_MASS"]) / 3;
-            let sign = ((mass - mean) / mean * 100 > 0) ? '+' : ''
-            d3.select("td#bodyweight").text(String(Math.round(mass)) + " kg (" + sign + String(Math.round((mass - mean) / mean * 100)) + "%)")
-        } else {
-            d3.select("td#bodyweight").text(String(Math.round(bodyWeight[0]["BODY_MASS"])) + " kg")
-        }
-    } catch (error) {
-        d3.select("td#bodyweight").text("No data")
-    }
-
-    try {
-        let playerData = data.filter(d => d.name == player)[0].data
-        console.log(playerData)
-        let jumpHeight = playerData[0]['JUMP_HEIGHT_IMP_MOM']
-        let rsiMod = playerData[0]['RSI_MODIFIED']
-        let concentricImpulse = playerData[0]['CONCENTRIC_IMPULSE']
-
-        d3.select("td#jump_height").text(String(jumpHeight.toPrecision(4)) + ' cm')
-        d3.select("td#rsi_mod").text(String(rsiMod.toPrecision(4)))
-        d3.select("td#concentric_impulse").text(String(concentricImpulse.toPrecision(4)) + ' N s')
-
-    } catch {
-
-    }
 
 }
 

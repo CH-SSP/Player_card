@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { color } from 'd3';
 import * as d3hexbin from 'd3-hexbin';
 import * as helper from './helper.js';
 
@@ -7,7 +8,7 @@ export function getCompleteValdData(data) {
     let array = [];
 
     data.forEach(d => d.vald_data
-        .filter(d => d.CONCENTRIC_IMPULSE != undefined & d.RSI_MODIFIED != undefined & d.RSI_MODIFIED < 500)
+        .filter(d => d.CONCENTRIC_IMPULSE != undefined & d.RSI_MODIFIED != undefined & d.RSI_MODIFIED < 500 & !isNaN(d.CONCENTRIC_IMPULSE) & !isNaN(d.RSI_MODIFIED))
         .forEach(d => array.push({
             'concentric_impulse': d.CONCENTRIC_IMPULSE,
             'rsi_mod': d.RSI_MODIFIED
@@ -20,20 +21,27 @@ export function getCompleteValdData(data) {
 
 }
 
-function appendXAxis(g, width, height) {
+function appendXAxis(g, width, height, xLabel) {
 
     let x = d3.scaleLinear().range([0, width]);
 
     g.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x).ticks(5))
-        .attr("class", "x-axis");
+        .attr("class", "x-axis")
+        .call(g => g.append("text")
+            .attr("x", width)
+            .attr("y", +35)
+            .attr("text-anchor", "end")
+            .attr('fill', 'currentColor')
+            .attr('font-size', 12)
+            .text(xLabel));
 
     return x;
 
 }
 
-export function cartesianBuilder(id, dim) {
+export function cartesianBuilder(id, dim, xLabel, yLabel) {
 
     var width = dim.fullWidth - dim.margin.left - dim.margin.right,
         height = dim.fullHeight - dim.margin.top - dim.margin.bottom;
@@ -54,21 +62,122 @@ export function cartesianBuilder(id, dim) {
     svg.append("clipPath")
         .attr("id", "clip")
         .append("rect")
+        .attr('y', -40)
         .attr("width", width)
-        .attr("height", height)
+        .attr("height", height + 40)
+
+    let color = d3.scaleLinear().range(["transparent", "blue"]),
+        hexbin = d3hexbin.hexbin().radius(10).extent([[0, 0], [width, height]])
+
+    appendQuadrant(svg, height, width)
+    appendLegend(svg, width, hexbin, color)
 
     return {
         'id': id,
         'svg': svg,
         'width': width,
         'height': height,
-        'x': appendXAxis(svg, width, height),
-        'y': helper.appendYAxis(svg, height),
-        'color': d3.scaleLinear().range(["transparent", "blue"]),
-        'hexbin' : d3hexbin.hexbin().radius(10).extent([[0, 0], [width, height]])
+        'x': appendXAxis(svg, width, height, xLabel),
+        'y': helper.appendYAxis(svg, height, dim.margin.left, yLabel),
+        'color': color,
+        'hexbin': hexbin
     }
 
 
+}
+
+function appendLegend(g, width, hexbin, color) {
+
+    let legend = g.append('g').attr('class', 'legend').attr('transform', 'translate(' + (width + 40) / 2 + ',' + (-20) + ')'),
+        legendColor = color.domain([0, 10]),
+        space = 120
+
+    legend.append('g')
+        .selectAll('text')
+        .data(['Most recent', 'Jump height', 'Older data', 'Other players'])
+        .enter()
+        .append('text')
+        .attr('x', (d, i) => space * (i - 2) + 35)
+        .attr('y', 0)
+        .text(d => d)
+        .attr('font-size', 12)
+
+
+    legend.append("g")
+        .attr("clip-path", "url(#clip)")
+        .selectAll("path")
+        .data([3, 10])
+        .join("path")
+        .attr("d", hexbin.hexagon())
+        .attr("transform", (d, i) => `translate(${i == 0 ? space * (3 - 2) : space * (3 - 2) + 20}, -4)`)
+        .attr("fill", d => legendColor(d))
+        .attr('opacity', 0.3)
+
+
+    legend.append("g")
+        .selectAll("circle")
+        .data([0.2, 0.9])
+        .enter()
+        .append('circle')
+        .attr("r", 8)
+        .attr("transform", (d, i) => `translate(${i == 0 ? space * (2 - 2) : space * (2 - 2) + 22}, -4)`)
+        .attr("fill", 'white')
+        .attr('stroke', 'rgb(18,27,104)')
+        .attr('stroke-width', 2)
+        .attr('opacity', d => d)
+
+    legend.append("g")
+        .selectAll("circle")
+        .data([5, 10])
+        .enter()
+        .append('circle')
+        .attr("r", d => d)
+        .attr("transform", (d, i) => `translate(${i == 0 ? space * (1 - 2) : space * (1 - 2) + 20}, -4)`)
+        .attr("fill", 'white')
+        .attr('stroke', 'rgb(18,27,104)')
+        .attr('stroke-width', 2)
+        .attr('opacity', 1)
+
+    legend.append("g")
+        .append('circle')
+        .attr("r", 8)
+        .attr("transform", `translate(${space * (0 - 2) + 20}, -4)`)
+        .attr("fill", 'rgb(18,27,104)')
+        .attr('stroke', 'rgb(18,27,104)')
+        .attr('stroke-width', 2)
+        .attr('opacity', 1)
+
+}
+
+function appendQuadrant(g, height, width) {
+
+    let quadrants = g.append('g')
+
+    quadrants.append('text')
+        .attr('x', 30)
+        .attr('y', 30)
+        .attr('font-size', 12)
+        .text('Low STR & High SPD')
+
+    quadrants.append('text')
+        .attr('x', width - 30)
+        .attr('y', 30)
+        .attr('font-size', 12)
+        .attr('text-anchor', 'end')
+        .text('High STR & High SPD')
+
+    quadrants.append('text')
+        .attr('x', 30)
+        .attr('y', height - 30)
+        .attr('font-size', 12)
+        .text('Low STR & Low SPD')
+
+    quadrants.append('text')
+        .attr('x', width - 30)
+        .attr('y', height - 30)
+        .attr('font-size', 12)
+        .attr('text-anchor', 'end')
+        .text('High STR & Low SPD')
 }
 
 /**
@@ -78,10 +187,10 @@ export function cartesianBuilder(id, dim) {
  * @param {*} x 
  * @returns {Function} modified x
  */
- function updateXAxis(data, g, x, metric) {
+function updateXAxis(data, g, x, metric) {
 
     //x.domain(d3.extent(data, d => d[metric]))
-    x.domain([Math.max(0,d3.min(data, d => d[metric])), d3.max(data, d => d[metric])])
+    x.domain([Math.max(0, d3.min(data, d => d[metric])), d3.max(data, d => d[metric])])
 
     g.selectAll(".x-axis")
         .transition()
@@ -98,8 +207,8 @@ export function cartesianBuilder(id, dim) {
  * @returns 
  */
 function updateColor(data, color) {
-    
-    return color.domain([0, d3.max(data, d => d.length)/2])
+
+    return color.domain([0, d3.max(data, d => d.length) / 2])
 
 }
 
@@ -126,22 +235,22 @@ function appendHexbins(g, hexbin, data, color) {
         .attr("transform", function (d) { return `translate(${d.x}, ${d.y})` })
         .attr("fill", function (d) { return color(d.length); })
         .attr('opacity', 0.3)
-        // .attr("stroke", "black")
-        // .attr("stroke-width", "0.1")
+    // .attr("stroke", "black")
+    // .attr("stroke-width", "0.1")
 
 }
 
 function appendPoints(data, g, x, y, tooltip, dates, xMetric, yMetric) {
 
-    let r = d3.scaleSqrt().domain(d3.extent(data, d => d.jump_height)).range([5,20]),
-    //color = d3.scaleTime().domain(d3.extent(data, d => d.date)).range(["transparent", "blue"])
-    opacity = d3.scaleTime().domain(dates).range([0.1,0.9])
+    let r = d3.scaleSqrt().domain(d3.extent(data, d => d.jump_height)).range([5, 20]),
+        //color = d3.scaleTime().domain(d3.extent(data, d => d.date)).range(["transparent", "blue"])
+        opacity = d3.scaleTime().domain(dates).range([0.1, 0.9])
 
 
 
     let len = data.length
-    let lastData = data[len-1]
-    let firstData = data.slice(0,len-1)
+    let lastData = data[len - 1]
+    let firstData = data.slice(0, len - 1)
 
     g.append('g')
         .attr('class', 'points')
@@ -176,7 +285,7 @@ function appendPoints(data, g, x, y, tooltip, dates, xMetric, yMetric) {
             return tooltip.style("visibility", "hidden");
         });
 
-        g.select('.points')
+    g.select('.points')
         .append('circle')
         .attr('cx', x(lastData[xMetric]))
         .attr('cy', y(lastData[yMetric]))
@@ -204,19 +313,20 @@ function appendPoints(data, g, x, y, tooltip, dates, xMetric, yMetric) {
         });
 
     let formatTime = d3.timeFormat('%b %d, %Y')
-    
-    
+
+
 
     if (lastData != undefined) {
-    g.append('text')
-    .attr('x', x(lastData[xMetric])+15)
-    .attr('y', y(lastData[yMetric])-15)
-    .attr('class', 'cartesianlabel')
-    .html(formatTime(lastData.date))}
+        g.append('text')
+            .attr('x', x(lastData[xMetric]) + 15)
+            .attr('y', y(lastData[yMetric]) - 15)
+            .attr('class', 'cartesianlabel')
+            .html(formatTime(lastData.date))
+    }
 
 }
 
-export function density(teamData, individualData, params, tooltip, dates) {
+export function cartesianUpdate(teamData, individualData, params, tooltip, dates) {
 
     params.svg.selectAll('.cartesianlabel').remove()
     params.svg.selectAll('.points').remove()
@@ -226,12 +336,12 @@ export function density(teamData, individualData, params, tooltip, dates) {
     let x = updateXAxis(teamData, params.svg, params.x, 'concentric_impulse'),
         y = helper.updateYAxis(teamData, params.svg, params.y, 'rsi_mod')
 
-    params.svg.select(".y-axis").select('path').attr('transform', 'translate('+ String(x(255)) +',0)')
+    params.svg.select(".y-axis").select('path').attr('transform', 'translate(' + String(x(255)) + ',0)')
 
 
     // Reformat the data: d3.hexbin() needs a specific format
     let inputForHexbinFun = []
-    teamData.forEach(d => inputForHexbinFun.push([x(d.concentric_impulse), y(d.rsi_mod)]))  // Note that we had the transform value of X and Y !
+    teamData.forEach(d => inputForHexbinFun.push([x(d.concentric_impulse), y(d.rsi_mod)]))
 
     // Prepare a color palette
     let color = updateColor(params.hexbin(inputForHexbinFun), params.color)

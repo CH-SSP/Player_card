@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import { getDatesWithDataEntry } from "./helper.js"
+import { addBodyWeight, getDatesWithDataEntry } from "./helper.js"
 
 export function makeSlider() {
 
@@ -11,7 +11,7 @@ export function makeSlider() {
         .attr('preserveAspectRatio', 'xMidYMid');
 
     var svg = d3.select("#slider"),
-        margin = { top: 20, right: 30, bottom: 20, left: 30 },
+        margin = { top: 25, right: 30, bottom: 20, left: 30 },
         width = fullWidth - margin.right - margin.left,
         height = fullHeight - margin.top - margin.bottom;
 
@@ -21,6 +21,8 @@ export function makeSlider() {
     var box = svg.append("g")
         .attr("class", "context")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+
 
     return { 'svg': svg, 'margin': margin, 'width': width, 'height': height, 'x': x, 'xAxis': xAxis, 'box': box }
 }
@@ -48,7 +50,7 @@ export function dateSlider(data, params, whenBrushed) {
         .attr('width', 0)
         .transition()
         .duration(500)
-        .attr('x', d => params.x(d.date)-barWidth/2)
+        .attr('x', d => params.x(d.date) - barWidth / 2)
         .attr('y', 0)
         .attr('height', params.height)
         .attr('width', 2)
@@ -60,11 +62,27 @@ export function dateSlider(data, params, whenBrushed) {
         .attr("transform", "translate(0," + params.height + ")")
         .call(params.xAxis);
 
+    params.box.append('g')
+        .attr('class', 'limits')
+        .append('text')
+        .attr('id', 'first')
+        .attr('transform', 'translate(0,-5)')
+        .attr('font-size', 12)
+
+    params.box.select('.limits')
+        .append('text')
+        .attr('id', 'second')
+        .attr('transform', 'translate('+params.width+',-5)')
+        .attr('font-size', 12)
+        .attr('text-anchor', 'end')
+
+
 
     var brush = d3.brushX()
         .extent([[0, 0], [params.width, params.height]])
         .on("brush end", (event) => {
             let interval = event.selection || params.x.range()
+            updateLimits(params.box, interval.map(d => params.x.invert(d)))
             whenBrushed(data, interval.map(d => params.x.invert(d)))
         });
 
@@ -75,4 +93,11 @@ export function dateSlider(data, params, whenBrushed) {
 
 
 
+}
+
+function updateLimits(g, interval) { 
+
+    let formatTime = d3.timeFormat('%b %Y')
+    g.selectAll('#first').text(formatTime(interval[0]))
+    g.selectAll('#second').text(formatTime(interval[1]))
 }

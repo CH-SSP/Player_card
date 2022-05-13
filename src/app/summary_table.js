@@ -7,16 +7,16 @@ export function updateTable(data, teams) {
         let weights = getWeight(data.vald_data),
             currentWeight = weights.shift(),
             weightChange = getWeightChange(currentWeight, weights),
-            jump_height = data.vald_data[0].JUMP_HEIGHT_IMP_MOM,
-            rsi_mod = data.vald_data[0].RSI_MODIFIED,
-            concentric_impulse = data.vald_data[0].CONCENTRIC_IMPULSE
+            jump_height = data.vald_data.filter(d => d.JUMP_HEIGHT_IMP_MOM != undefined).map(d => d.JUMP_HEIGHT_IMP_MOM)[0],
+            rsi_mod = data.vald_data.filter(d => d.RSI_MODIFIED != undefined).map(d => d.RSI_MODIFIED)[0],
+            concentric_impulse = data.vald_data.filter(d => d.CONCENTRIC_IMPULSE != undefined).map(d => d.CONCENTRIC_IMPULSE)[0]
 
         if (weights.length > 0) {
             d3.select("td#bodyweight").text(currentWeight.toFixed(1) + ' kg (' + (weightChange > 0 ? '+ ' : '- ') + Math.abs(weightChange.toFixed(1)) + ')')
         } else if (weights.length == 0) {
             d3.select("td#bodyweight").text(currentWeight.toFixed(1) + ' kg')
         }
-
+        
         d3.select("td#jump_height").text(jump_height.toFixed(2) + ' cm')
         d3.select("td#rsi_mod").text(rsi_mod.toFixed(2))
         d3.select("td#concentric_impulse").text(concentric_impulse.toFixed(1) + ' N s')
