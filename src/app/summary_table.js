@@ -13,7 +13,7 @@ export function updateTable(data, teams) {
             currentWeight = weights.shift(),
             weightChange = getWeightChange(currentWeight, weights),
             jump_height = data.vald_data.filter(d => d.JUMP_HEIGHT_IMP_MOM != undefined).map(d => d.JUMP_HEIGHT_IMP_MOM)[0],
-            rsi_mod = data.vald_data.filter(d => d.RSI_MODIFIED != undefined).map(d => d.RSI_MODIFIED)[0],
+            rsi_mod = data.vald_data.filter(d => d.RSI_MODIFIED != undefined).map(d => d.RSI_MODIFIED)[0] * 0.01,
             concentric_impulse = data.vald_data.filter(d => d.CONCENTRIC_IMPULSE != undefined).map(d => d.CONCENTRIC_IMPULSE)[0]
 
         if (weights.length > 0) {

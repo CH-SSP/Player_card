@@ -200,7 +200,7 @@ export function getValdData(data, dates) {
             'name': null,
             'type': null,
             'jump_height': d.JUMP_HEIGHT_IMP_MOM,
-            'rsi_mod': d.RSI_MODIFIED,
+            'rsi_mod': d.RSI_MODIFIED *0.01 , // cm/s to m/s
             'concentric_impulse': d.CONCENTRIC_IMPULSE,
             'Landing Impulse': d.LANDING_IMPULSE,
             'Landing RFD': d.LANDING_RFD,

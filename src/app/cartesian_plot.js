@@ -21,7 +21,7 @@ export function getCompleteValdData(data) {
         .filter(d => d.CONCENTRIC_IMPULSE != undefined & d.RSI_MODIFIED != undefined & d.RSI_MODIFIED < 500 & !isNaN(d.CONCENTRIC_IMPULSE) & !isNaN(d.RSI_MODIFIED))
         .forEach(d => array.push({
             'concentric_impulse': d.CONCENTRIC_IMPULSE,
-            'rsi_mod': d.RSI_MODIFIED
+            'rsi_mod': d.RSI_MODIFIED * 0.01 // conversion from cm/s to m/s
         })
         )
     )
@@ -394,7 +394,7 @@ export function cartesianUpdate(teamData, individualData, params, tooltip, dates
         y = helper.updateYAxis(teamData, params.svg, params.y, 'rsi_mod')
 
     params.svg.select(".y-axis").select('path').attr('transform', 'translate(' + String(x(255)) + ',0)')
-
+    params.svg.select(".x-axis").select('path').attr('transform', 'translate(0,' + String(-y(0)+y(0.62))+')')
 
     // Reformat the data: d3.hexbin() needs a specific format
     let inputForHexbinFun = []
